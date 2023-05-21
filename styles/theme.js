@@ -25,14 +25,14 @@ const theme = createTheme({
   typography: {
     fontFamily: roboto.style.fontFamily,
   },
-  components: {
-    // Name of the component
-    MuiButton: {
-        defaultProps: {
-          variant: 'contained', // Set the default variant to 'contained'
-        },
-      },
-  },
+  // components: {
+  //   // Name of the component
+  //   MuiButton: {
+  //       defaultProps: {
+  //         variant: 'contained', // Set the default variant to 'contained'
+  //       },
+  //     },
+  // },
 });
 
 export default theme;
