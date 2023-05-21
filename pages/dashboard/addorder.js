@@ -6,15 +6,27 @@ import InputLabel from '@mui/material/InputLabel';
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import { Button, FormControl, MenuItem } from '@mui/material';
-
+import { useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
 
 
 function AddOrder() {
+    const { register, handleSubmit, reset } = useForm();
+    const [selectedProduct, setselectedProduct] = React.useState('');
+    const products = useSelector(state => state.product.products)
+    const [inputData, setInputData] = React.useState([{ input1: '', input2: '', input3: '' }]);
+    const handleAddInput = () => {
+        setInputData([...inputData, { input1: '', input2: '', input3: '' }]);
+    };
 
-    const [age, setAge] = React.useState('');
+    const handleRemoveInput = (index) => {
+        const updatedData = [...inputData];
+        updatedData.splice(index, 1);
+        setInputData(updatedData);
+    };
+    const handleChange = (e) => {
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
+        setselectedProduct(e.target.value)
     };
     return (
         <>
@@ -40,38 +52,48 @@ function AddOrder() {
                     ></TextField>
                 </Box>
 
-                <Box >
-                    <FormControl sx={{ m: 1, minWidth: 200 }}>
-                        <InputLabel id="demo-simple-select-autowidth-label">Select Product</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-autowidth-label"
-                            id="demo-simple-select-autowidth"
-                            value={age}
-                            onChange={handleChange}
-                            autoWidth
-                            label="Select Product"
-                        >
-                            <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={10}>Twenty</MenuItem>
-                            <MenuItem value={21}>Twenty one</MenuItem>
-                            <MenuItem value={22}>Twenty one and a half</MenuItem>
-                        </Select>
-                    </FormControl>
+
+                {inputData.map((data, index) => {
+                    return (
+                        <Box key={index}>
+                            <FormControl sx={{ m: 1, minWidth: 200 }}>
+                                <InputLabel id="demo-simple-select-autowidth-label">Select Product</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-autowidth-label"
+                                    id="demo-simple-select-autowidth"
+                                    value={selectedProduct}
+                                    onChange={handleChange}
+                                    autoWidth
+                                    label="Select Product"
+                                >
+                                    <MenuItem value="" disabled>
+                                        <em>None</em>
+                                    </MenuItem>
+                                    {products.length > 0 && products.map((product) => {
+                                        return (
+                                            <MenuItem  {...register(`input[${index}].input1`)} key={product._id} value={product}>{product.productTitle}</MenuItem>
+                                        )
+                                    })}
+
+                                </Select>
+                            </FormControl>
+                            <TextField type='number' name="Rate"
+                                placeholder='Rate'
+                            ></TextField>
+                            <TextField type='number' name="Quantity"
+                                placeholder='Quantity'
+                            ></TextField>
+                            <TextField type='number' name="Total"
+                                placeholder='Total'
+                            ></TextField>
+                        </Box>
+                    )
+                })}
+
+                <button type="button" onClick={handleAddInput}>Add</button>
 
 
 
-                    <TextField type='number' name="Rate"
-                        placeholder='Rate'
-                    ></TextField>
-                    <TextField type='number' name="Quantity"
-                        placeholder='Quantity'
-                    ></TextField>
-                    <TextField type='number' name="Total"
-                        placeholder='Total'
-                    ></TextField>
-                </Box>
 
 
                 <Box>
@@ -110,12 +132,12 @@ function AddOrder() {
                     ></TextField>
                 </Box>
 
-                <Box >
+                {/* <Box >
                     <FormControl sx={{ m: 1, minWidth: 200 }}>
-                        <InputLabel id="demo-simple-select-autowidth-label">Payment Type</InputLabel>
+                        <InputLabel id="dem-select-autowidth-label">Payment Type</InputLabel>
                         <Select
-                            labelId="demo-simple-select-autowidth-label"
-                            id="demo-simple-select-autowidth"
+                            labelId="dem-select-autowidth-label"
+                            id="dem-select-autowidth"
                             // value={age}
                             // onChange={handleChange}
                             autoWidth
@@ -129,7 +151,7 @@ function AddOrder() {
                             <MenuItem value={22}>Twenty one and a half</MenuItem>
                         </Select>
                     </FormControl>
-                </Box>
+                </Box> */}
 
                 <Box>
                     <Button variant='contained'>Place Order</Button>
