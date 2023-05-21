@@ -25,7 +25,7 @@ function AddOrder() {
 
                 <TextField type='date' name="date"
                 ></TextField>
-                <TextField type='date'
+                <TextField type='time'
                 ></TextField>
 
                 <Box>
