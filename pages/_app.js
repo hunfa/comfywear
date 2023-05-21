@@ -10,7 +10,8 @@ import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const showNavbar = router.pathname !== '/dashboard' ? false : router.pathname === '/login' ? false : true;
+  console.log(router.pathname.startsWith("/dashboard"))
+  const showNavbar = router.pathname.startsWith("/dashboard");
   return (
     <>
 
