@@ -1,6 +1,7 @@
 import dbConnect from "../../utils/dbconnect";
 import { getUser } from "../../utils/getUser";
 import jwt from "jsonwebtoken";
+import Product from "../../schema/productSchema";
 
 const JWT_SECRET = "hunfaisagoodboy";
 
@@ -16,7 +17,12 @@ const handler = async (req, res) => {
 
     const token = jwt.sign({ user }, JWT_SECRET);
 
-    res.send({ success: true, payload: { token, user } });
+    try {
+      let products = await Product.find();
+      res.send({ success: true, payload: { token, user, products } });
+    } catch (error) {
+      res.send({ success: false });
+    }
   } else {
     res.send({ success: false });
   }
