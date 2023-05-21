@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 import InputLabel from '@mui/material/InputLabel';
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
-import { FormControl, MenuItem } from '@mui/material';
+import { Button, FormControl, MenuItem } from '@mui/material';
 
 
 
@@ -110,7 +110,30 @@ function AddOrder() {
                     ></TextField>
                 </Box>
 
+                <Box >
+                    <FormControl sx={{ m: 1, minWidth: 200 }}>
+                        <InputLabel id="demo-simple-select-autowidth-label">Payment Type</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-autowidth-label"
+                            id="demo-simple-select-autowidth"
+                            // value={age}
+                            // onChange={handleChange}
+                            autoWidth
+                            label="Select Product"
+                        >
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            <MenuItem value={10}>Twenty</MenuItem>
+                            <MenuItem value={21}>Twenty one</MenuItem>
+                            <MenuItem value={22}>Twenty one and a half</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
 
+                <Box>
+                    <Button variant='contained'>Place Order</Button>
+                </Box>
             </Paper>
         </>
     )
