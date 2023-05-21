@@ -1,28 +1,21 @@
-/* This is a database connection function*/
-import mongoose from "mongoose";
 
-const connection = {}; /* creating connection object*/
+const mongoose = require("mongoose");
 
-async function dbConnect() {
-  /* check if we have connection to our databse*/
-  if (connection.isConnected) {
-    return;
+const dbConnect = (handler) => async (req, res) => {
+  if (mongoose.connections[0].readyState) {
+    return handler(req, res);
   }
-
-  /* connecting to our database */
   try {
-    const db = await mongoose.connect(
-      "mongodb+srv://nabeel:nabeel@cluster0.vnr62df.mongodb.net/comfywear",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
+    await mongoose.connect(
+      "mongodb+srv://nabeel:nabeel@cluster0.vnr62df.mongodb.net/comfywear"
     );
-    connection.isConnected = db.connections[0].readyState;
-    console.log("db connected");
+    console.log("database connected")
   } catch (error) {
-    console.log("error while connected", error);
+    console.log(error)
   }
-}
+
+  return handler(req, res);
+};
 
 export default dbConnect;
+
