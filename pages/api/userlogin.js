@@ -7,7 +7,7 @@ const JWT_SECRET = "hunfaisagoodboy";
 
 const handler = async (req, res) => {
 
-    console.log("here")
+
     if (req.method === 'POST') {
         const user = await getUser(req, res);
 

@@ -2,22 +2,19 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
-
+import { useRouter } from 'next/router'
 
 
 export default function SignIn() {
 
   const [isLoading, setIsLoading] = React.useState(false);
-
+  const router = useRouter()
 
 
   const handleSubmit = async (event) => {
@@ -35,6 +32,12 @@ export default function SignIn() {
         password: data.get('password')
       })
       console.log(res)
+      if (res.data.success) {
+        localStorage.setItem("token", res.data.payload.token)
+        localStorage.setItem("user", JSON.stringify(res.data.payload.user))
+
+        router.push("/dashboard")
+      }
     } catch (error) {
       console.log(error)
     }
@@ -89,18 +92,11 @@ export default function SignIn() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            startIcon={isLoading && <CircularProgress size={20} color="inherit" />}
+            endIcon={isLoading && <CircularProgress size={20} color="inherit" />}
           >
-            Login In
+            {isLoading ? "Logining In" : "Login In"}
           </Button>
-          <Grid container>
 
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Login with Admin"}
-              </Link>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
 
