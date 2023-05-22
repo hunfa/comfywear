@@ -1,164 +1,144 @@
-import React from 'react'
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
+import * as React from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import InputLabel from '@mui/material/InputLabel';
-import Box from '@mui/material/Box';
-import Select from '@mui/material/Select';
-import { Button, FormControl, MenuItem } from '@mui/material';
+import useScanDetection from "use-scan-detection"
 import { useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+const TAX_RATE = 0;
+
+function ccyFormat(num) {
+    return `${num.toFixed(2)}`;
+}
+
+function priceRow(qty, unit) {
+    return qty * unit;
+}
+
+function createRow(desc, qty, unit, code) {
+    const price = priceRow(qty, unit);
+    return { desc, qty, unit, price, code };
+}
+
+function subtotal(items) {
+    return items.map(({ price }) => price).reduce((sum, i) => sum + i, 0);
+}
+
+// const rows = [
+//   createRow('Paperclips (Box)', 100, 1.15),
+//   createRow('Paper (Case)', 10, 45.99),
+//   createRow('Waste Basket', 2, 17.99),
+// ];
+
+
 
 
 function AddOrder() {
-    const { register, handleSubmit, reset } = useForm();
-    const [selectedProduct, setselectedProduct] = React.useState('');
+
+    // const [barcode, setbarcode] = React.useState("")
+    const [rows, setrows] = React.useState([])
     const products = useSelector(state => state.product.products)
-    const [inputData, setInputData] = React.useState([{ input1: '', input2: '', input3: '' }]);
-    const handleAddInput = () => {
-        setInputData([...inputData, { input1: '', input2: '', input3: '' }]);
-    };
+    console.log(products)
+    const invoiceSubtotal = subtotal(rows);
+    const invoiceTaxes = TAX_RATE * invoiceSubtotal;
+    const invoiceTotal = invoiceTaxes + invoiceSubtotal;
 
-    const handleRemoveInput = (index) => {
-        const updatedData = [...inputData];
-        updatedData.splice(index, 1);
-        setInputData(updatedData);
-    };
-    const handleChange = (e) => {
+    const alreadyExistsInRow = (code) => {
+        for (let i = 0; i < rows.length; i++) {
+            if (code === rows[i].code)
+                return true
 
-        setselectedProduct(e.target.value)
-    };
+        }
+        return false
+    }
+
+    const updateCurrentRow = (code) => {
+        const newState = rows.map((row) => {
+            if (row.code === code) {
+                return createRow(row.desc, row.qty + 1, row.unit, row.code)
+            }
+            return row
+        })
+        setrows(newState)
+    }
+    const getProduct = (barcode) => {
+        for (let i = 0; i < products.length; i++) {
+            if (products[i].productCode === barcode) {
+                return products[i];
+            }
+        }
+        return null;
+    }
+
+    useScanDetection({
+        onComplete: (barcode) => {
+            //   setbarcode(code)
+            const product = getProduct(barcode)
+            if (!product) return;
+
+            if (alreadyExistsInRow(product.productCode))
+                updateCurrentRow(product.productCode)
+
+            else
+                setrows([...rows, createRow(product.productTitle
+                    , 1, product.salePrice, product.productCode
+                )])
+        },
+        minLength: 2,
+    })
+
+
+
+
+
     return (
-        <>
-            <Paper >
-                <Typography variant="h4" component="h2">
-                    Add Order
-                </Typography>
+        <TableContainer component={Paper} sx={{width:"97%",margin:"auto",marginTop:"20px"}} >
+            <Table sx={{ minWidth: 700 }} aria-label="spanning table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell align="center" colSpan={3}>
+                            Details
+                        </TableCell>
+                        <TableCell align="right">Price</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell >Desc</TableCell>
+                        <TableCell align="right">Qty.</TableCell>
+                        <TableCell align="right">Unit</TableCell>
+                        <TableCell align="right">Sum</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {rows.map((row) => (
+                        <TableRow key={row.code}>
+                            <TableCell>{row.desc}</TableCell>
+                            <TableCell align="right">{row.qty}</TableCell>
+                            <TableCell align="right">{row.unit}</TableCell>
+                            <TableCell align="right">{ccyFormat(row.price)}</TableCell>
+                        </TableRow>
+                    ))}
 
-                <TextField type='date' name="date"
-                ></TextField>
-                <TextField type='time'
-                ></TextField>
-
-                <Box>
-                    <TextField type='text' name="ClientName"
-                        placeholder='Client Name'
-                    ></TextField>
-                </Box>
-
-                <Box>
-                    <TextField type='text' name="ClientContact"
-                        placeholder='Client Contact'
-                    ></TextField>
-                </Box>
-
-
-                {inputData.map((data, index) => {
-                    return (
-                        <Box key={index}>
-                            <FormControl sx={{ m: 1, minWidth: 200 }}>
-                                <InputLabel id="demo-simple-select-autowidth-label">Select Product</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-autowidth-label"
-                                    id="demo-simple-select-autowidth"
-                                    value={selectedProduct}
-                                    onChange={handleChange}
-                                    autoWidth
-                                    label="Select Product"
-                                >
-                                    <MenuItem value="" disabled>
-                                        <em>None</em>
-                                    </MenuItem>
-                                    {products.length > 0 && products.map((product) => {
-                                        return (
-                                            <MenuItem  {...register(`input[${index}].input1`)} key={product._id} value={product}>{product.productTitle}</MenuItem>
-                                        )
-                                    })}
-
-                                </Select>
-                            </FormControl>
-                            <TextField type='number' name="Rate"
-                                placeholder='Rate'
-                            ></TextField>
-                            <TextField type='number' name="Quantity"
-                                placeholder='Quantity'
-                            ></TextField>
-                            <TextField type='number' name="Total"
-                                placeholder='Total'
-                            ></TextField>
-                        </Box>
-                    )
-                })}
-
-                <button type="button" onClick={handleAddInput}>Add</button>
-
-
-
-
-
-                <Box>
-                    <TextField type='number' name="VAT"
-                        placeholder='VAT 0%'
-                    ></TextField>
-                </Box>
-
-                <Box>
-                    <TextField type='number' name="TotalAmount"
-                        placeholder='Total Amount'
-                    ></TextField>
-                </Box>
-
-                <Box>
-                    <TextField type='number' name="Discount"
-                        placeholder='Discount'
-                    ></TextField>
-                </Box>
-
-                <Box>
-                    <TextField type='number' name="GrandTotal"
-                        placeholder='Grand Total'
-                    ></TextField>
-                </Box>
-
-                <Box>
-                    <TextField type='number' name="PaidAmount"
-                        placeholder='PaidAmount'
-                    ></TextField>
-                </Box>
-
-                <Box>
-                    <TextField type='number' name="DueAmount"
-                        placeholder='Due Amount'
-                    ></TextField>
-                </Box>
-
-                {/* <Box >
-                    <FormControl sx={{ m: 1, minWidth: 200 }}>
-                        <InputLabel id="dem-select-autowidth-label">Payment Type</InputLabel>
-                        <Select
-                            labelId="dem-select-autowidth-label"
-                            id="dem-select-autowidth"
-                            // value={age}
-                            // onChange={handleChange}
-                            autoWidth
-                            label="Select Product"
-                        >
-                            <MenuItem value="">
-                                <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={10}>Twenty</MenuItem>
-                            <MenuItem value={21}>Twenty one</MenuItem>
-                            <MenuItem value={22}>Twenty one and a half</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Box> */}
-
-                <Box>
-                    <Button variant='contained'>Place Order</Button>
-                </Box>
-            </Paper>
-        </>
-    )
+                    <TableRow>
+                        <TableCell rowSpan={3} />
+                        <TableCell colSpan={2}>Subtotal</TableCell>
+                        <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Tax</TableCell>
+                        <TableCell align="right">{`${(TAX_RATE * 100).toFixed(0)} %`}</TableCell>
+                        <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell colSpan={2}>Total</TableCell>
+                        <TableCell align="right">{ccyFormat(invoiceTotal)}</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
 }
 
 export default AddOrder
