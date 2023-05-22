@@ -1,13 +1,8 @@
-
-import React from 'react';
-import { useSelector } from 'react-redux';
-
-
+import React from "react";
+import { useSelector } from "react-redux";
 
 function DashBoard() {
-
-    return <>
-        dashboard</>
+  return <>dashboard</>;
 }
 
-export default DashBoard
+export default DashBoard;

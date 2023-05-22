@@ -7,6 +7,7 @@ import Navbar from "../components/navbar";
 import { useRouter } from "next/router";
 import { store } from "../store/index";
 import { Provider } from "react-redux";
+import AuthMiddleware from "../middleware/authMiddleware";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -22,8 +23,10 @@ function MyApp({ Component, pageProps }) {
       <Provider store={store}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          {showNavbar && <Navbar />}
-          <Component {...pageProps} />
+          <AuthMiddleware>
+            {showNavbar && <Navbar />}
+            <Component {...pageProps} />
+          </AuthMiddleware>
         </ThemeProvider>
       </Provider>
     </>
