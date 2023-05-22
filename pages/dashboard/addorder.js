@@ -8,6 +8,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import useScanDetection from "use-scan-detection"
 import { useSelector } from 'react-redux';
+import { Box, Button, TextField } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import Backdroploading from '../../components/backdrop';
 const TAX_RATE = 0;
 
 function ccyFormat(num) {
@@ -18,33 +22,47 @@ function priceRow(qty, unit) {
     return qty * unit;
 }
 
-function createRow(desc, qty, unit, code) {
+function createRow(desc, qty, unit, code,product) {
     const price = priceRow(qty, unit);
-    return { desc, qty, unit, price, code };
+    return { desc, qty, unit, price, code ,product};
 }
 
 function subtotal(items) {
     return items.map(({ price }) => price).reduce((sum, i) => sum + i, 0);
 }
 
-// const rows = [
-//   createRow('Paperclips (Box)', 100, 1.15),
-//   createRow('Paper (Case)', 10, 45.99),
-//   createRow('Waste Basket', 2, 17.99),
-// ];
-
-
+const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
 
 
 function AddOrder() {
 
-    // const [barcode, setbarcode] = React.useState("")
     const [rows, setrows] = React.useState([])
+    const [dueAmount, setdueAmount] = React.useState(0)
+    const [open, setOpen] = React.useState(false);
+    const [apiLoading, setapiLoading] = React.useState(false)
+    const [snackbar, setsnackbar] = React.useState({msg:'',status:''})
     const products = useSelector(state => state.product.products)
-    console.log(products)
     const invoiceSubtotal = subtotal(rows);
     const invoiceTaxes = TAX_RATE * invoiceSubtotal;
     const invoiceTotal = invoiceTaxes + invoiceSubtotal;
+
+React.useEffect(()=>{
+    if(snackbar.msg)
+openSnackBar()
+},[snackbar])
+    const openSnackBar = () => {
+        setOpen(true);
+      };
+    
+      const closeSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpen(false);
+      };
 
     const alreadyExistsInRow = (code) => {
         for (let i = 0; i < rows.length; i++) {
@@ -75,7 +93,7 @@ function AddOrder() {
 
     useScanDetection({
         onComplete: (barcode) => {
-            //   setbarcode(code)
+            
             const product = getProduct(barcode)
             if (!product) return;
 
@@ -84,18 +102,48 @@ function AddOrder() {
 
             else
                 setrows([...rows, createRow(product.productTitle
-                    , 1, product.salePrice, product.productCode
+                    , 1, product.salePrice, product.productCode,product
                 )])
         },
         minLength: 2,
     })
 
+const handlePaidAmount=(e)=>{
 
+    if(!e.target.value){
+        setdueAmount(0)
+    }
+    else{
+const paidAmount=parseInt(e.target.value);
+setdueAmount(paidAmount-invoiceTotal)}
+}
+
+const handleReset=()=>{
+    setrows([]);
+    setdueAmount(0);
+}
+
+const handleOrder=()=>{
+    // setsnackbar({msg:"Order Placed Successfully",status:"success"})
+
+setapiLoading(true);
+
+
+
+
+}
 
 
 
     return (
-        <TableContainer component={Paper} sx={{width:"97%",margin:"auto",marginTop:"20px"}} >
+        <>
+        {apiLoading && <Backdroploading/>}
+         <Snackbar open={open} autoHideDuration={6000} onClose={closeSnackBar}>
+        <Alert onClose={closeSnackBar} severity={snackbar.status} sx={{ width: '100%' }}>
+          {snackbar.msg}
+        </Alert>
+      </Snackbar>
+        <TableContainer component={Paper} sx={{width:"97%",mx:"auto",marginTop:"20px"}} >
             <Table sx={{ minWidth: 700 }} aria-label="spanning table">
                 <TableHead>
                     <TableRow>
@@ -138,6 +186,21 @@ function AddOrder() {
                 </TableBody>
             </Table>
         </TableContainer>
+
+        <Paper  sx={{marginTop:"20px",width:"97%",mx:"auto",padding:1,display:"flex",justifyContent:"space-between"}}>
+        <TextField type='number' value={dueAmount} label='Due Amount' variant="filled" disabled></TextField>
+<TextField type='number'  label="Paid Amount" variant="filled" onChange={handlePaidAmount}></TextField>
+
+        </Paper>
+        <Box width={"97%"} mx={"auto"} textAlign={"right"} marginTop={2} display={"flex"} justifyContent={"space-between"}>
+        <Button variant='contained' color="error"  size='large' onClick={handleReset}>
+                Reset
+            </Button>
+            <Button variant='contained' size='large' onClick={handleOrder}>
+                Make Order
+            </Button>
+        </Box>
+        </>
     );
 }
 
