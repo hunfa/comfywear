@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const dbConnect = (handler) => async (req, res) => {
   if (mongoose.connections[0].readyState) {
-    return handler(req, res);
+    return handler(req, res,mongoose.connections[0].client);
   }
   try {
     await mongoose.connect(
@@ -14,7 +14,7 @@ const dbConnect = (handler) => async (req, res) => {
     console.log(error)
   }
 
-  return handler(req, res);
+  return handler(req, res,mongoose.connections[0].client);
 };
 
 export default dbConnect;
