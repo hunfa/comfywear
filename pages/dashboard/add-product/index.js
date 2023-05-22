@@ -14,6 +14,7 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -49,152 +50,195 @@ const Index = () => {
 
   return (
     <>
+      <Box mt={"2rem"} ml="2rem">
+        <Typography fontWeight={"bold"} fontSize={"2rem"}>
+          Add Product
+        </Typography>
+      </Box>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          type="text"
-          placeholder="Product Code"
-          {...register("productcode", { required: true })}
-        />
-        <TextField
-          type="text"
-          placeholder="Product name"
-          {...register("title", { required: true })}
-        />
-        <TextField
-          type="number"
-          placeholder="Quantity"
-          {...register("quantity", { required: true })}
-        />
-        <TextField
-          type="number"
-          placeholder="Rate"
-          {...register("Price", { required: true })}
-        />
-        <TextField
-          type="number"
-          placeholder="Sale Price"
-          {...register("salePrice", {
-            required: true,
-          })}
-        />
-        {/* <FormControl > */}
-        <Box>
-          <InputLabel id="demo-simple-select-label">Age</InputLabel>
-          <NativeSelect
-            label="Select-option"
-            placeholder="Select-option"
-            {...register("brand", { required: true })}
-          >
-            <option value="Select-option">Select-option</option>
-            <option value="comfywear">Comfy Wear</option>
-            <option value="bin-saeed">Bin Saeed</option>
-          </NativeSelect>
+        <Box
+          display={"flex"}
+          justifyContent={"center"}
+          gap={"1rem"}
+          flexWrap={"wrap"}
+          marginTop={"1rem"}
+        >
+          <TextField
+            type="text"
+            placeholder="Product Code"
+            {...register("productcode", { required: true })}
+          />
+          <TextField
+            type="text"
+            style={{
+              width: "40%",
+            }}
+            placeholder="Product name"
+            {...register("title", { required: true })}
+          />
+          <TextField
+            type="number"
+            placeholder="Quantity"
+            {...register("quantity", { required: true })}
+          />
+          <TextField
+            type="number"
+            placeholder="Rate"
+            {...register("Price", { required: true })}
+          />
+          <TextField
+            type="number"
+            placeholder="Sale Price"
+            {...register("salePrice", {
+              required: true,
+            })}
+          />
         </Box>
-        <Box>
-          <InputLabel id="stuf">Select Stuff</InputLabel>
-          <NativeSelect
-            label="Select-Stuff"
-            placeholder="Select-option"
-            {...register("stuff", { required: true })}
-          >
-            <option value="none">Select-option</option>
-            <option value="Loan">Loan</option>
-            <option value="Embroidery">Embroidery</option>
-            <option value="Linen">Linen</option>
-            <option value="Cotton">Cotton</option>
-            <option value="Silk">Silk</option>
-            <option value="Chiffon">Chiffon</option>
-            <option value="Organza">Organza</option>
-          </NativeSelect>
-        </Box>
-
-        <Box>
-          <InputLabel id="category">Select Category</InputLabel>
-          <NativeSelect
-            label="Select-Category"
-            placeholder="Select-option"
-            {...register("category", { required: true })}
-          >
-            <option value="none">Select-option</option>
-            <option value="3-piece">3-piece</option>
-            <option value="2-piece">2-piece</option>
-            <option value="single">single</option>
-            <option value="none">None</option>
-          </NativeSelect>
-        </Box>
-
-        <Box>
-          <InputLabel id="status">Select Status</InputLabel>
-          <NativeSelect
-            label="Select-Status"
-            placeholder="Select-option"
-            {...register("status", { required: true })}
-          >
-            <option value="none">Select-option</option>
-            <option value="Available">Available</option>
-            <option value="out-of-stock">out-of-stock</option>
-          </NativeSelect>
-        </Box>
-        <Box>Add Variant</Box>
-        <Box>
-          <FormControl>
-            <FormLabel id="demo-radio-buttons-group-label">
-              Do you have variant
-            </FormLabel>
-
-            <RadioGroup
-              onChange={(e) => setisvariant(e.target.value)}
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="no"
-              name="radio-buttons-group"
+        <Box
+          marginY={"2rem"}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          gap={"1rem"}
+        >
+          <Box width={"20%"}>
+            <InputLabel id="age">Brand</InputLabel>
+            <Select
+              id="age"
+              style={{ width: "70%" }}
+              label="Select-option"
+              placeholder="Select-option"
+              {...register("brand", { required: true })}
             >
-              <FormControlLabel value="yes" control={<Radio />} label="yes" />
-              <FormControlLabel value="no" control={<Radio />} label="no" />
-            </RadioGroup>
-          </FormControl>
-        </Box>
-        <Box display={isvariant === "no" ? "none" : "block"}>
-          {fields.map((item, index) => {
-            return (
-              <Box sx={{ display: "flex", gap: "1rem" }} key={item.id}>
-                <TextField
-                  margin="normal"
-                  label="Size"
-                  {...register(`variant.${index}.size`)}
-                />
-
-                <Controller
-                  render={({ field }) => (
-                    <TextField margin="normal" label="quantity" {...field} />
-                  )}
-                  name={`variant.${index}.quantity`}
-                  control={control}
-                />
-                <TextField
-                  margin="normal"
-                  label="Price"
-                  {...register(`variant.${index}.price`)}
-                />
-                <Button type="button" onClick={() => remove(index)}>
-                  Delete
-                </Button>
-              </Box>
-            );
-          })}
-          <Box>
-            <Button
-              type="button"
-              onClick={() => {
-                append({ size: "S", quantity: 1, price: 0 });
-              }}
+              <MenuItem value="Select-option">Select-option</MenuItem>
+              <MenuItem value="comfywear">Comfy Wear</MenuItem>
+              <MenuItem value="bin-saeed">Bin Saeed</MenuItem>
+            </Select>
+          </Box>
+          <Box width={"20%"}>
+            <InputLabel id="stuf">Select Stuff</InputLabel>
+            <Select
+              style={{ width: "70%" }}
+              label="Select-Stuff"
+              placeholder="Select-option"
+              {...register("stuff", { required: true })}
             >
-              Add more
-            </Button>
+              <MenuItem value="none">Select-option</MenuItem>
+              <MenuItem value="Loan">Loan</MenuItem>
+              <MenuItem value="Embroidery">Embroidery</MenuItem>
+              <MenuItem value="Linen">Linen</MenuItem>
+              <MenuItem value="Cotton">Cotton</MenuItem>
+              <MenuItem value="Silk">Silk</MenuItem>
+              <MenuItem value="Chiffon">Chiffon</MenuItem>
+              <MenuItem value="Organza">Organza</MenuItem>
+            </Select>
+          </Box>
+
+          <Box width={"20%"}>
+            <InputLabel id="category">Select Category</InputLabel>
+            <Select
+              style={{ width: "70%" }}
+              label="Select-Category"
+              placeholder="Select-option"
+              {...register("category", { required: true })}
+            >
+              <MenuItem value="none">Select-option</MenuItem>
+              <MenuItem value="3-piece">3-piece</MenuItem>
+              <MenuItem value="2-piece">2-piece</MenuItem>
+              <MenuItem value="single">single</MenuItem>
+              <MenuItem value="none">None</MenuItem>
+            </Select>
+          </Box>
+
+          <Box width={"20%"}>
+            <InputLabel id="status">Select Status</InputLabel>
+            <Select
+              style={{ width: "70%" }}
+              label="Select-Status"
+              placeholder="Select-option"
+              {...register("status", { required: true })}
+            >
+              <MenuItem value="none">Select-option</MenuItem>
+              <MenuItem value="Available">Available</MenuItem>
+              <MenuItem value="out-of-stock">out-of-stock</MenuItem>
+            </Select>
           </Box>
         </Box>
+        <Box width={"80%"} mx="auto">
+          <Box>Add Variant</Box>
+          <Box>
+            <FormControl>
+              <FormLabel id="demo-radio-buttons-group-label">
+                Do you have variant
+              </FormLabel>
 
-        <Box>
-          <Input type="submit">Submit</Input>
+              <RadioGroup
+                onChange={(e) => setisvariant(e.target.value)}
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="no"
+                name="radio-buttons-group"
+              >
+                <FormControlLabel value="yes" control={<Radio />} label="yes" />
+                <FormControlLabel value="no" control={<Radio />} label="no" />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+          <Box display={isvariant === "no" ? "none" : "block"}>
+            {fields.map((item, index) => {
+              return (
+                <Box
+                  sx={{ display: "flex", gap: "1rem", alignItems: "center" }}
+                  key={item.id}
+                >
+                  <TextField
+                    margin="normal"
+                    label="Size"
+                    {...register(`variant.${index}.size`)}
+                  />
+
+                  <Controller
+                    render={({ field }) => (
+                      <TextField margin="normal" label="quantity" {...field} />
+                    )}
+                    name={`variant.${index}.quantity`}
+                    control={control}
+                  />
+                  <TextField
+                    margin="normal"
+                    label="Price"
+                    {...register(`variant.${index}.price`)}
+                  />
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    type="button"
+                    style={{
+                      height: "40px",
+                    }}
+                    onClick={() => remove(index)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              );
+            })}
+            <Box>
+              <Button
+                type="button"
+                variant="contained"
+                onClick={() => {
+                  append({ size: "S", quantity: 1, price: 0 });
+                }}
+              >
+                Add more
+              </Button>
+            </Box>
+          </Box>
+          <Box my="1rem">
+            <Button fullWidth variant="contained" type="submit">
+              Submit
+            </Button>
+          </Box>
         </Box>
       </form>
     </>

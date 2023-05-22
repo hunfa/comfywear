@@ -21,29 +21,26 @@ function Navbar() {
   const router = useRouter();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [pages, setPages] = React.useState([]);
+  const [pages, setPages] = React.useState([
+    { name: "Dashboard", link: "" },
+    { name: "Categories", link: "" },
+    { name: "Products", link: "add-product" },
+    { name: "Orders", link: "addorder" },
+    { name: "Brands", link: "" },
+  ]);
 
   let user;
   React.useEffect(() => {
     user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      if (user.type === "ADMIN") {
+      if (user.type != "ADMIN") {
         setPages([
           { name: "Dashboard", link: "" },
-          { name: "Categories", link: "" },
-          { name: "Products", link: "add-product" },
-          { name: "Orders", link: "addorder" },
-          { name: "Brands", link: "" },
-        ]);
-      } else {
-        setPages([
-          { name: "Dashboard", link: "" },
-
           { name: "Orders", link: "addorder" },
         ]);
       }
     }
-  }, [pages]);
+  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
