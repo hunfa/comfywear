@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -14,35 +13,19 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
-let pages = [];
-
-const settings = ["Logout"];
+const pages = [
+  { name: "Dashboard", link: "" },
+  { name: "Categories", link: "" },
+  { name: "Products", link: "add-product" },
+  { name: "Orders", link: "addorder" },
+  { name: "Brands", link: "" },
+];
+const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Navbar() {
-  const router = useRouter();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      if (user.type === "ADMIN") {
-        pages = [
-          { name: "Dashboard", link: "" },
-          { name: "My Orders", link: "my-order" },
-          { name: "Products", link: "add-product" },
-          { name: "Add Orders", link: "addorder" },
-        ];
-      } else {
-        pages = [
-          { name: "Dashboard", link: "" },
-          { name: "Add Orders", link: "addorder" },
-        ];
-      }
-    }
-  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -57,8 +40,6 @@ function Navbar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-    localStorage.clear();
-    router.push("/");
   };
 
   return (

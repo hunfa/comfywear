@@ -7,7 +7,7 @@ import Navbar from "../components/navbar";
 import { useRouter } from "next/router";
 import { store } from "../store/index";
 import { Provider } from "react-redux";
-import AuthMiddleware from "../middleware/authMiddleware";
+import { useEffect } from "react";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -15,6 +15,12 @@ function MyApp({ Component, pageProps }) {
   console.log(router.pathname.startsWith("/dashboard"));
   const showNavbar = router.pathname.startsWith("/dashboard");
 
+  useEffect(() => {
+    // Client-side logic
+    if (!localStorage.getItem("user") || !localStorage.getItem("token")) {
+      router.push("/");
+    }
+  }, [router.pathname]);
   return (
     <>
       <Head>
@@ -23,10 +29,8 @@ function MyApp({ Component, pageProps }) {
       <Provider store={store}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <AuthMiddleware>
-            {showNavbar && <Navbar />}
-            <Component {...pageProps} />
-          </AuthMiddleware>
+          {showNavbar && <Navbar />}
+          <Component {...pageProps} />
         </ThemeProvider>
       </Provider>
     </>
