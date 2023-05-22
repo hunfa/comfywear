@@ -197,7 +197,7 @@ setapiLoading(true);
                 Reset
             </Button>
             <Button variant='contained' size='large' onClick={handleOrder}>
-                Make Order
+                Place Order
             </Button>
         </Box>
         </>
