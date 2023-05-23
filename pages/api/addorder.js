@@ -31,7 +31,7 @@ const handler = async (req, res, client) => {
 
         }
 
-        const res = await Orders.findOneAndUpdate(
+        const result = await Orders.findOneAndUpdate(
           { $and: [{ date: date }, { branch: branch }] },
           { $push: { orders: order } },
           {session}
@@ -39,12 +39,18 @@ const handler = async (req, res, client) => {
         )
 
 
-        if (res) return res.send({ success: true });
-
+        if (result) return res.send({ success: true });
 
         // no document found. creating a new one
-       await  Orders.create({orders:[order],branch:branch,date:date},{session})
-        
+        const newOrder = new Orders(
+          {orders:[order],
+            branch:branch,
+            date:date,
+          }
+        );
+  
+        // Save the order to the database
+         await newOrder.save();
         res.send({ success: true })
 
 

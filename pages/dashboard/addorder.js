@@ -13,6 +13,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Backdroploading from '../../components/backdrop';
 import axios from 'axios';
+import moment from 'moment/moment';
 const TAX_RATE = 0;
 
 function ccyFormat(num) {
@@ -128,8 +129,8 @@ function AddOrder() {
     }
 
     const handleOrder = async () => {
-        // setsnackbar({msg:"Order Placed Successfully",status:"success"})
 
+        if (rows.length <= 0) return;
         setapiLoading(true);
 
 
@@ -144,7 +145,6 @@ function AddOrder() {
 
             }
         })
-
         const newObj = {
             name: "hunfa",
             contact: "03004245465",
@@ -153,27 +153,28 @@ function AddOrder() {
             due: dueAmount,
             total: invoiceTotal,
             type: "cash",
-            date: new Date().toUTCString(),
+            date: moment().format("DD/MM/YYYY"),
             subTotal: invoiceSubtotal,
             tax: invoiceTaxes,
             discount: invoiceDiscount,
             products,
-branch:  JSON.parse( localStorage.getItem("user")).branch
+            branch: JSON.parse(localStorage.getItem("user")).branch
         }
-try {
-    const res = await axios.post(`/api/addorder`, {
-        newObj
-    });
-    console.log(res)
-    if(res.success){
-        setsnackbar({msg:"Order Placed Successfully",status:"success"})
-    }
-} catch (error) {
-    console.log(error)
-    setsnackbar({msg:"Error: Order Failed",status:"error"})
-}
-      
-setapiLoading(false);
+
+        try {
+            const res = await axios.post(`/api/addorder`, {
+                newObj
+            });
+            console.log(res)
+            if (res.data.success) {
+                setsnackbar({ msg: "Order Placed Successfully", status: "success" })
+            }
+        } catch (error) {
+            console.log(error)
+            setsnackbar({ msg: "Error: Order Failed", status: "error" })
+        }
+
+        setapiLoading(false);
 
 
     }
