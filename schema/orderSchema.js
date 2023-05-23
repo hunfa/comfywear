@@ -8,7 +8,7 @@ const OrderSchema = new mongoose.Schema({
         default:0
     },
     date:{
-        type:Date,
+        type:String,
         required:true
     },
 
@@ -17,28 +17,33 @@ const OrderSchema = new mongoose.Schema({
         required:true
     },
 
-    orders: [{
-        name:String,
-        contact:Number,
-        totalItems:Number,
-        paid:Number,
-        due:Number,
-        total:Number,
-        type:String,
-        date:Date,
-        subTotal:Number,
-        discount:Number,
-        products:[{
-            title:String,
-            code:String,
-            Rate:Number,
-            qty:Number,
-            total:Number
-        }]
-
-    }]
+    orders: []
 
 
 });
 mongoose.models = {};
 module.exports = mongoose.model("order", OrderSchema);
+
+
+// orders: [{
+//     name:String,
+//     contact:String,
+//     totalItems:Number,
+//     paid:Number,
+//     due:Number,
+//     total:Number,
+//     type:String,
+//     date:String,
+//     subTotal:Number,
+//     tax:Number,
+//     discount:Number,
+//     products:[{
+//         title:String,
+//         code:String,
+//         rate:Number,
+//         salePrice:Number,
+//         qty:Number,
+//         _id:String
+//     }]
+
+// }]
