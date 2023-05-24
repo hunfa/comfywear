@@ -33,23 +33,36 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 function AddOrder() {
   const [rows, setrows] = React.useState([]);
-  // const [ChangeAmount, setChangeAmount] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [apiLoading, setapiLoading] = React.useState(false);
-  const [screenDetails, setscreenDetails] = React.useState({
+  const [screenData, setscreenData] = React.useState({
     ChangeAmount:0,
     invoiceSubtotal:0,
     invoiceDiscount:0,
     invoiceTotal:0,
-    paidAmount:0,
+    paidAmount:'',
   })
   const [snackbar, setsnackbar] = React.useState({ msg: "", status: "" });
-  // const paidAmount = React.useRef(0);
-  const invoiceDiscount = 0;
+ 
   const products = useSelector((state) => state.product.products);
-  // const invoiceSubtotal = subtotal(rows);
-  // const invoiceTaxes = TAX_RATE * invoiceSubtotal;
-  // const invoiceTotal = invoiceTaxes + invoiceSubtotal;
+
+
+  React.useEffect(() => {
+  
+const invoiceSubtotal= subtotal(rows);
+const invoiceTotal= invoiceSubtotal-((screenData.invoiceDiscount/100)*invoiceSubtotal)
+let changeAmount= screenData.paidAmount - invoiceTotal
+if(changeAmount < 0 )
+changeAmount=0;
+
+setscreenData({...screenData,
+  ChangeAmount:changeAmount,
+  invoiceSubtotal:invoiceSubtotal,
+  invoiceTotal:invoiceTotal,}
+  )
+
+  }, [rows]);
+
 
   React.useEffect(() => {
     if (snackbar.msg) openSnackBar();
@@ -112,31 +125,43 @@ function AddOrder() {
     minLength: 2,
   });
 
+  const handledeleteRow=(index)=>{
+
+    const newState= rows.filter((r,i)=>i!==index)
+   
+    setrows(newState)
+
+  }
+
   const handlePaidAmount = (e) => {
     if (!e.target.value) {
-      setscreenDetails({...screenDetails,ChangeAmount:0})
+      setscreenData({...screenData,ChangeAmount:0,paidAmount:''})
     } else {
       const paidAmount = parseInt(e.target.value);
-      if(paidAmount - screenDetails.invoiceTotal < 0)
-      setscreenDetails({...screenDetails,ChangeAmount:0})
+      if(paidAmount - screenData.invoiceTotal < 0)
+      setscreenData({...screenData,ChangeAmount:0,paidAmount:e.target.value})
       else
-      setscreenDetails({...screenDetails,ChangeAmount:paidAmount - screenDetails.invoiceTotal})
+      setscreenData({...screenData,ChangeAmount:paidAmount - screenData.invoiceTotal,paidAmount:e.target.value})
     }
   };
 
   const handleReset = () => {
     setrows([]);
-    setscreenDetails({
+    setscreenData({
       ChangeAmount:0,
       invoiceSubtotal:0,
       invoiceDiscount:0,
       invoiceTotal:0,
-      paidAmount:0,
+      paidAmount:'',
     })
   };
-
   const handleOrder = async () => {
     if (rows.length <= 0) return;
+    if(screenData.paidAmount < screenData.invoiceTotal){
+      setsnackbar({ msg: "Kindly pay full amount", status: "error" });
+      return
+    }
+
     setapiLoading(true);
 
     const products = rows.map((p) => {
@@ -153,12 +178,12 @@ function AddOrder() {
       name: "hunfa",
       contact: "03004245465",
       totalItems: rows.length,
-      paid: paidAmount.current,
-      total: invoiceTotal,
+      paid: screenData.paidAmount,
+      total: screenData.invoiceTotal,
       type: "cash",
       date: moment().format("DD/MM/YYYY"),
-      subTotal: invoiceSubtotal,
-      discount: invoiceDiscount,
+      subTotal: screenData.invoiceSubtotal,
+      discount: screenData.invoiceDiscount,
       products,
       branch: JSON.parse(localStorage.getItem("user")).branch,
     };
@@ -167,9 +192,9 @@ function AddOrder() {
       const res = await axios.post(`/api/addorder`, {
         newObj,
       });
-      console.log(res);
       if (res.data.success) {
         setsnackbar({ msg: "Order Placed Successfully", status: "success" });
+        handleReset()
       }
       else{
         setsnackbar({ msg: res.data.payload, status: "error" });
@@ -194,7 +219,9 @@ function AddOrder() {
           {snackbar.msg}
         </Alert>
       </Snackbar>
-     <AddOrderTable rows={rows} invoiceSubtotal={screenDetails.invoiceSubtotal}  invoiceTaxes={screenDetails.invoiceDiscount} invoiceTotal={screenDetails.invoiceTotal}/>
+     <AddOrderTable rows={rows} invoiceSubtotal={screenData.invoiceSubtotal}  invoiceDiscount={screenData.invoiceDiscount} invoiceTotal={screenData.invoiceTotal}
+     handledeleteRow={handledeleteRow}
+     />
 
       <Paper
         sx={{
@@ -208,7 +235,7 @@ function AddOrder() {
       >
         <TextField
           type="number"
-          value={screenDetails.ChangeAmount}
+          value={screenData.ChangeAmount}
           label="Change"
           variant="filled"
           disabled
@@ -217,8 +244,10 @@ function AddOrder() {
           type="number"
           label="Paid Amount"
           variant="filled"
+          value={screenData.paidAmount}
           onChange={handlePaidAmount}
         ></TextField>
+       
       </Paper>
       <Box
         width={"97%"}
