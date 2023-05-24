@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../components/Table/MaterialTable";
 import axios from "axios";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { setOrder } from "../../store/orderSlice";
 
 const Allorders = () => {
+  const dispatch = useDispatch();
   const router = useRouter();
   const [data, setdata] = useState([]);
   useEffect(() => {
@@ -40,20 +43,21 @@ const Allorders = () => {
       size: 120,
     },
     {
-      accessorKey: "orders.type",
-      header: "type",
-      size: 300,
-    },
-    {
-      accessorKey: "status",
-      header: "status",
-    },
-    {
-      accessorKey: "salePrice",
-      header: "Sale Price",
-      size: 220,
+      accessor: "actions",
+      header: "Actions",
+      Cell: ({ row }) => (
+        <Button variant="outlined" onClick={() => handleAction(row.original)}>
+          Detial
+        </Button>
+      ),
     },
   ];
+
+  const handleAction = (id) => {
+    console.log(id);
+    dispatch(setOrder(id));
+    router.push("/dashboard/orderdetail");
+  };
 
   return (
     <>
