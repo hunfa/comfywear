@@ -23,10 +23,10 @@ function Navbar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [pages, setPages] = React.useState([
     { name: "Dashboard", link: "" },
-    { name: "Categories", link: "" },
-    { name: "Products", link: "add-product" },
+    { name: "Add Products", link: "add-product" },
+    { name: "All Product", link: "allproduct" },
     { name: "Orders", link: "addorder" },
-    { name: "Brands", link: "" },
+    { name: "All Orders", link: "allorders" },
   ]);
 
   let user;
@@ -113,8 +113,12 @@ function Navbar() {
               }}
             >
               {pages.map((page) => (
-                <Link href={`/dashboard/${page.link}`} legacyBehavior>
-                  <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                <Link
+                  key={page.name}
+                  href={`/dashboard/${page.link}`}
+                  legacyBehavior
+                >
+                  <MenuItem onClick={handleCloseNavMenu}>
                     <Typography textAlign="center">{page.name}</Typography>
                   </MenuItem>
                 </Link>
@@ -140,9 +144,12 @@ function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
-              <Link href={`/dashboard/${page.link}`} legacyBehavior>
+              <Link
+                key={page.name}
+                href={`/dashboard/${page.link}`}
+                legacyBehavior
+              >
                 <Button
-                  key={page.name}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: "white", display: "block" }}
                 >

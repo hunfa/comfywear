@@ -91,7 +91,7 @@ export default function SignIn() {
               isLoading && <CircularProgress size={20} color="inherit" />
             }
           >
-            {isLoading ? "Logining In" : "Login In"}
+            {isLoading ? "please wait" : "Login In"}
           </Button>
         </Box>
       </Box>

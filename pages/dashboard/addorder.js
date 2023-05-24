@@ -187,7 +187,7 @@ function AddOrder() {
         component={Paper}
         sx={{ width: "97%", mx: "auto", marginTop: "20px" }}
       >
-        <TableContainer sx={{ minWidth: 700 }} aria-label="spanning table">
+        <Table sx={{ minWidth: 700 }} aria-label="spanning table">
           <TableHead>
             <TableRow>
               <TableCell align="center" colSpan={3}>

@@ -19,8 +19,10 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const Index = () => {
+  const router = useRouter();
   const [isvariant, setisvariant] = useState("no");
   const {
     register,
@@ -36,6 +38,12 @@ const Index = () => {
     control,
     name: "variant",
   });
+
+  useEffect(() => {
+    if (!localStorage.getItem("user") || !localStorage.getItem("token")) {
+      router.push("/");
+    }
+  }, [router.pathname]);
 
   const onSubmit = async (data) => {
     try {

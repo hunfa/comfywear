@@ -6,51 +6,20 @@ import { ExportToCsv } from "export-to-csv"; //or use your library of choice her
 // import { data } from "./makeData";
 
 //defining columns outside of the component is fine, is stable
-const columns = [
-  {
-    accessorKey: "productCode",
-    header: "code",
-    size: 40,
-  },
-  {
-    accessorKey: "productTitle",
-    header: "Product Name",
-    size: 120,
-  },
-  {
-    accessorKey: "quantity",
-    header: "Quantity",
-    size: 120,
-  },
-  {
-    accessorKey: "rate",
-    header: "Price",
-    size: 300,
-  },
-  {
-    accessorKey: "status",
-    header: "status",
-  },
-  {
-    accessorKey: "salePrice",
-    header: "Sale Price",
-    size: 220,
-  },
-];
 
-const csvOptions = {
-  fieldSeparator: ",",
-  quoteStrings: '"',
-  decimalSeparator: ".",
-  showLabels: true,
-  useBom: true,
-  useKeysAsHeaders: false,
-  headers: columns.map((c) => c.header),
-};
+const Table = ({ data, columns }) => {
+  const csvOptions = {
+    fieldSeparator: ",",
+    quoteStrings: '"',
+    decimalSeparator: ".",
+    showLabels: true,
+    useBom: true,
+    useKeysAsHeaders: false,
+    headers: columns.map((c) => c.header),
+  };
 
-const csvExporter = new ExportToCsv(csvOptions);
+  const csvExporter = new ExportToCsv(csvOptions);
 
-const Table = ({ data }) => {
   const handleExportRows = (rows) => {
     csvExporter.generateCsv(rows.map((row) => row.original));
   };
