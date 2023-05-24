@@ -2,7 +2,7 @@ import dbConnect from "../../utils/dbconnect";
 import Product from "../../schema/productSchema";
 
 const handler = async (req, res) => {
-  if (req.method === "POST") {
+  if (req.method === "GET") {
     let product;
     try {
       product = await Product.find();
