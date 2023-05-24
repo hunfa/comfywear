@@ -36,11 +36,11 @@ const productSchema = new mongoose.Schema({
     required: true,
     default: "none",
   },
-  variantStatus: {
-    type: String,
-    required: true,
-  },
-  variant: [],
+  // variantStatus: {
+  //   type: String,
+  //   required: true,
+  // },
+  // variant: [],
 });
 mongoose.models = {};
 module.exports = mongoose.model("product", productSchema);

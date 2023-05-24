@@ -16,9 +16,9 @@ const handler = async (req, res) => {
       stuff,
       category,
       status,
-      variant,
+      // variant,
     } = req.body.data;
-    const variantStatus = req.body.isvariant;
+    // const variantStatus = req.body.isvariant;
 
     let product;
     try {
@@ -33,11 +33,11 @@ const handler = async (req, res) => {
         stuff: stuff,
         category: category,
         status: status,
-        variantStatus: variantStatus,
-        variant: variantStatus === "no" ? null : variant,
+        // variantStatus: variantStatus,
+        // variant: variantStatus === "no" ? null : variant,
       });
       await product.save();
-      return res.send({ success: true, payload: product });
+      return res.send({ success: true });
     } catch (error) {
       console.log("error", error);
       return res.send({ success: false, error: error });

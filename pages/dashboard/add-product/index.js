@@ -16,18 +16,21 @@ import {
   Radio,
   Typography,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 
 const Index = () => {
+  const [isLoading, setisLoading] = useState(false);
   const router = useRouter();
   const [isvariant, setisvariant] = useState("no");
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -46,20 +49,34 @@ const Index = () => {
   }, [router.pathname]);
 
   const onSubmit = async (data) => {
+    setisLoading(true);
     try {
       const responce = await axios.post("/api/addproduct", {
         data,
-        isvariant,
+        // isvariant,
       });
       console.log(responce.data);
+      if (responce.data.success) {
+        setisLoading(false);
+        reset();
+      }
     } catch (error) {
+      setisLoading(false);
       console.log("error while uploading product");
     }
   };
 
   return (
     <>
-      <Paper elevation={3} style={{ padding: "1rem 0px" }}>
+      <Paper
+        elevation={3}
+        style={{
+          padding: "1rem 0px",
+          width: "90%",
+          marginInline: "auto",
+          marginTop: "2rem",
+        }}
+      >
         <Box mt={"2rem"} ml="2rem">
           <Typography fontWeight={"bold"} fontSize={"2rem"}>
             Add Product
@@ -185,7 +202,8 @@ const Index = () => {
               </FormControl>
             </Box>
           </Box>
-          <Box width={"80%"} mx="auto">
+
+          {/* <Box width={"80%"} mx="auto">
             <Box>Add Variant</Box>
             <Box>
               <FormControl>
@@ -274,11 +292,18 @@ const Index = () => {
                 </Button>
               </Box>
             </Box>
-            <Box my="1rem">
-              <Button fullWidth variant="contained" type="submit">
-                Submit
-              </Button>
-            </Box>
+          </Box> */}
+          <Box my="1rem" width={"80%"} marginX={"auto"}>
+            <Button
+              endIcon={
+                isLoading && <CircularProgress size={20} color="inherit" />
+              }
+              fullWidth
+              variant="contained"
+              type="submit"
+            >
+              Submit
+            </Button>
           </Box>
         </form>
       </Paper>
