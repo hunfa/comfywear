@@ -1,10 +1,5 @@
 import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+
 import Paper from "@mui/material/Paper";
 import useScanDetection from "use-scan-detection";
 import { useSelector } from "react-redux";
@@ -14,11 +9,10 @@ import MuiAlert from "@mui/material/Alert";
 import Backdroploading from "../../components/backdrop";
 import axios from "axios";
 import moment from "moment/moment";
-const TAX_RATE = 0;
+import AddOrderTable from "../../components/Table/AddOrderTable";
+// const TAX_RATE = 0;
 
-function ccyFormat(num) {
-  return `${num.toFixed(2)}`;
-}
+
 
 function priceRow(qty, unit) {
   return qty * unit;
@@ -39,16 +33,23 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 function AddOrder() {
   const [rows, setrows] = React.useState([]);
-  const [dueAmount, setdueAmount] = React.useState(0);
+  // const [ChangeAmount, setChangeAmount] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [apiLoading, setapiLoading] = React.useState(false);
+  const [screenDetails, setscreenDetails] = React.useState({
+    ChangeAmount:0,
+    invoiceSubtotal:0,
+    invoiceDiscount:0,
+    invoiceTotal:0,
+    paidAmount:0,
+  })
   const [snackbar, setsnackbar] = React.useState({ msg: "", status: "" });
-  const paidAmount = React.useRef(0);
+  // const paidAmount = React.useRef(0);
   const invoiceDiscount = 0;
   const products = useSelector((state) => state.product.products);
-  const invoiceSubtotal = subtotal(rows);
-  const invoiceTaxes = TAX_RATE * invoiceSubtotal;
-  const invoiceTotal = invoiceTaxes + invoiceSubtotal;
+  // const invoiceSubtotal = subtotal(rows);
+  // const invoiceTaxes = TAX_RATE * invoiceSubtotal;
+  // const invoiceTotal = invoiceTaxes + invoiceSubtotal;
 
   React.useEffect(() => {
     if (snackbar.msg) openSnackBar();
@@ -113,16 +114,25 @@ function AddOrder() {
 
   const handlePaidAmount = (e) => {
     if (!e.target.value) {
-      setdueAmount(0);
+      setscreenDetails({...screenDetails,ChangeAmount:0})
     } else {
       const paidAmount = parseInt(e.target.value);
-      setdueAmount(paidAmount - invoiceTotal);
+      if(paidAmount - screenDetails.invoiceTotal < 0)
+      setscreenDetails({...screenDetails,ChangeAmount:0})
+      else
+      setscreenDetails({...screenDetails,ChangeAmount:paidAmount - screenDetails.invoiceTotal})
     }
   };
 
   const handleReset = () => {
     setrows([]);
-    setdueAmount(0);
+    setscreenDetails({
+      ChangeAmount:0,
+      invoiceSubtotal:0,
+      invoiceDiscount:0,
+      invoiceTotal:0,
+      paidAmount:0,
+    })
   };
 
   const handleOrder = async () => {
@@ -144,12 +154,10 @@ function AddOrder() {
       contact: "03004245465",
       totalItems: rows.length,
       paid: paidAmount.current,
-      due: dueAmount,
       total: invoiceTotal,
       type: "cash",
       date: moment().format("DD/MM/YYYY"),
       subTotal: invoiceSubtotal,
-      tax: invoiceTaxes,
       discount: invoiceDiscount,
       products,
       branch: JSON.parse(localStorage.getItem("user")).branch,
@@ -162,6 +170,9 @@ function AddOrder() {
       console.log(res);
       if (res.data.success) {
         setsnackbar({ msg: "Order Placed Successfully", status: "success" });
+      }
+      else{
+        setsnackbar({ msg: res.data.payload, status: "error" });
       }
     } catch (error) {
       console.log(error);
@@ -183,54 +194,7 @@ function AddOrder() {
           {snackbar.msg}
         </Alert>
       </Snackbar>
-      <TableContainer
-        component={Paper}
-        sx={{ width: "97%", mx: "auto", marginTop: "20px" }}
-      >
-        <Table sx={{ minWidth: 700 }} aria-label="spanning table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" colSpan={3}>
-                Details
-              </TableCell>
-              <TableCell align="right">Price</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Desc</TableCell>
-              <TableCell align="right">Qty.</TableCell>
-              <TableCell align="right">Unit</TableCell>
-              <TableCell align="right">Sum</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.code}>
-                <TableCell>{row.desc}</TableCell>
-                <TableCell align="right">{row.qty}</TableCell>
-                <TableCell align="right">{row.unit}</TableCell>
-                <TableCell align="right">{ccyFormat(row.price)}</TableCell>
-              </TableRow>
-            ))}
-
-            <TableRow>
-              <TableCell rowSpan={3} />
-              <TableCell colSpan={2}>Subtotal</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Tax</TableCell>
-              <TableCell align="right">{`${(TAX_RATE * 100).toFixed(
-                0
-              )} %`}</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={2}>Total</TableCell>
-              <TableCell align="right">{ccyFormat(invoiceTotal)}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+     <AddOrderTable rows={rows} invoiceSubtotal={screenDetails.invoiceSubtotal}  invoiceTaxes={screenDetails.invoiceDiscount} invoiceTotal={screenDetails.invoiceTotal}/>
 
       <Paper
         sx={{
@@ -244,8 +208,8 @@ function AddOrder() {
       >
         <TextField
           type="number"
-          value={dueAmount}
-          label="Due Amount"
+          value={screenDetails.ChangeAmount}
+          label="Change"
           variant="filled"
           disabled
         ></TextField>

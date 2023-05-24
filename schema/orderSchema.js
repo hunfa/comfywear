@@ -30,12 +30,10 @@ module.exports = mongoose.model("order", OrderSchema);
 //     contact:String,
 //     totalItems:Number,
 //     paid:Number,
-//     due:Number,
 //     total:Number,
 //     type:String,
 //     date:String,
 //     subTotal:Number,
-//     tax:Number,
 //     discount:Number,
 //     products:[{
 //         title:String,

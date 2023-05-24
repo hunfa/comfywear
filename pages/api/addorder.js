@@ -16,21 +16,39 @@ const handler = async (req, res, client) => {
     //   });
     const { totalItems, products, date } = req.body.newObj;
     const { branch, ...order } = req.body.newObj;
+
+// if(!(order.paid >= order.total))
+// return res.send({success:false,payload:"Order failed. Kindly pay full amount"})
+
+
     const session = client.startSession();
     try {
       // Start a session
       await session.withTransaction(async () => {
 
-        for (let i = 0; i < totalItems; i++) {
+//         for (let i = 0; i < totalItems; i++) {
 
-          await Product.findByIdAndUpdate(
-            { _id: [products[i]._id] },
-            { $inc: { quantity: -products[i].qty } },
-            { session }
-          )
+//           await Product.findByIdAndUpdate(
+//             { _id: [products[i]._id] },
+//             { $inc: { quantity: -products[i].qty } },
+//             { session }
+//           )
+// console.log("i : ",i)
+//         }
+const updatePromises = [];
 
-        }
-
+for (let i = 0; i < totalItems; i++) {
+  updatePromises.push(
+    Product.findByIdAndUpdate(
+      { _id: products[i]._id },
+      { $inc: { quantity: -products[i].qty } },
+      { session }
+    )
+  );
+  console.log(i)
+}
+await Promise.all(updatePromises);
+console.log("after loop")
         const result = await Orders.findOneAndUpdate(
           { $and: [{ date: date }, { branch: branch }] },
           { $push: { orders: order } },
