@@ -108,7 +108,7 @@ function AddOrder() {
       }
     }
     return null;
-  };
+  };//
 
   if (typeof document !== "undefined") {
     useScanDetection({
