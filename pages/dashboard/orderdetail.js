@@ -15,7 +15,7 @@ import Paper from "@mui/material/Paper";
 function Orderdetail() {
   const order = useSelector((state) => state.order);
   const [orderProducts, setorderProducts] = useState([]);
-
+  console.log("order", order.orders.orders.products);
   const [loading, setloading] = useState(false);
   const router = useRouter();
 

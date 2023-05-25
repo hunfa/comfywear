@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useRef } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -15,12 +14,7 @@ import MuiAlert from "@mui/material/Alert";
 import Backdroploading from "../../components/backdrop";
 import axios from "axios";
 import moment from "moment/moment";
-import { useReactToPrint } from "react-to-print";
 const TAX_RATE = 0;
-
-function ccyFormat(num) {
-  return `${num.toFixed(2)}`;
-}
 
 function priceRow(qty, unit) {
   return qty * unit;
@@ -41,16 +35,33 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 function AddOrder() {
   const [rows, setrows] = React.useState([]);
-  const [dueAmount, setdueAmount] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [apiLoading, setapiLoading] = React.useState(false);
+  const [screenData, setscreenData] = React.useState({
+    ChangeAmount: 0,
+    invoiceSubtotal: 0,
+    invoiceDiscount: 0,
+    invoiceTotal: 0,
+    paidAmount: "",
+  });
   const [snackbar, setsnackbar] = React.useState({ msg: "", status: "" });
-  const paidAmount = React.useRef(0);
-  const invoiceDiscount = 0;
+
   const products = useSelector((state) => state.product.products);
-  const invoiceSubtotal = subtotal(rows);
-  const invoiceTaxes = TAX_RATE * invoiceSubtotal;
-  const invoiceTotal = invoiceTaxes + invoiceSubtotal;
+
+  React.useEffect(() => {
+    const invoiceSubtotal = subtotal(rows);
+    const invoiceTotal =
+      invoiceSubtotal - (screenData.invoiceDiscount / 100) * invoiceSubtotal;
+    let changeAmount = screenData.paidAmount - invoiceTotal;
+    if (changeAmount < 0) changeAmount = 0;
+
+    setscreenData({
+      ...screenData,
+      ChangeAmount: changeAmount,
+      invoiceSubtotal: invoiceSubtotal,
+      invoiceTotal: invoiceTotal,
+    });
+  }, [rows]);
 
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
@@ -120,22 +131,49 @@ function AddOrder() {
     });
   }
 
+  const handledeleteRow = (index) => {
+    const newState = rows.filter((r, i) => i !== index);
+
+    setrows(newState);
+  };
+
   const handlePaidAmount = (e) => {
     if (!e.target.value) {
-      setdueAmount(0);
+      setscreenData({ ...screenData, ChangeAmount: 0, paidAmount: "" });
     } else {
       const paidAmount = parseInt(e.target.value);
-      setdueAmount(paidAmount - invoiceTotal);
+      if (paidAmount - screenData.invoiceTotal < 0)
+        setscreenData({
+          ...screenData,
+          ChangeAmount: 0,
+          paidAmount: e.target.value,
+        });
+      else
+        setscreenData({
+          ...screenData,
+          ChangeAmount: paidAmount - screenData.invoiceTotal,
+          paidAmount: e.target.value,
+        });
     }
   };
 
   const handleReset = () => {
     setrows([]);
-    setdueAmount(0);
+    setscreenData({
+      ChangeAmount: 0,
+      invoiceSubtotal: 0,
+      invoiceDiscount: 0,
+      invoiceTotal: 0,
+      paidAmount: "",
+    });
   };
-
   const handleOrder = async () => {
     if (rows.length <= 0) return;
+    if (screenData.paidAmount < screenData.invoiceTotal) {
+      setsnackbar({ msg: "Kindly pay full amount", status: "error" });
+      return;
+    }
+
     setapiLoading(true);
 
     const products = rows.map((p) => {
@@ -152,14 +190,12 @@ function AddOrder() {
       name: "hunfa",
       contact: "03004245465",
       totalItems: rows.length,
-      paid: paidAmount.current,
-      due: dueAmount,
-      total: invoiceTotal,
+      paid: screenData.paidAmount,
+      total: screenData.invoiceTotal,
       type: "cash",
       date: moment().format("DD/MM/YYYY"),
-      subTotal: invoiceSubtotal,
-      tax: invoiceTaxes,
-      discount: invoiceDiscount,
+      subTotal: screenData.invoiceSubtotal,
+      discount: screenData.invoiceDiscount,
       products,
       branch: JSON.parse(localStorage.getItem("user")).branch,
     };
@@ -168,10 +204,9 @@ function AddOrder() {
       const res = await axios.post(`/api/addorder`, {
         newObj,
       });
-
+      console.log(res);
       if (res.data.success) {
         setsnackbar({ msg: "Order Placed Successfully", status: "success" });
-        handlePrint();
       }
     } catch (error) {
       console.log(error);
@@ -194,7 +229,6 @@ function AddOrder() {
         </Alert>
       </Snackbar>
       <TableContainer
-        ref={componentRef}
         component={Paper}
         sx={{ width: "97%", mx: "auto", marginTop: "20px" }}
       >
@@ -255,8 +289,8 @@ function AddOrder() {
       >
         <TextField
           type="number"
-          value={dueAmount}
-          label="Due Amount"
+          value={screenData.ChangeAmount}
+          label="Change"
           variant="filled"
           disabled
         ></TextField>
@@ -264,6 +298,7 @@ function AddOrder() {
           type="number"
           label="Paid Amount"
           variant="filled"
+          value={screenData.paidAmount}
           onChange={handlePaidAmount}
         ></TextField>
       </Paper>
