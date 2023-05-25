@@ -24,7 +24,6 @@ function AddOrderTable({rows,invoiceSubtotal,invoiceDiscount,invoiceTotal,handle
               <TableCell align="right">Qty.</TableCell>
               <TableCell align="right">Unit</TableCell>
               <TableCell align="right">Sum</TableCell>
-              <TableCell align="right">Discount</TableCell>
               <TableCell align="right">Action</TableCell>
             </TableRow>
           </TableHead>
@@ -35,7 +34,6 @@ function AddOrderTable({rows,invoiceSubtotal,invoiceDiscount,invoiceTotal,handle
                 <TableCell align="right">{row.qty}</TableCell>
                 <TableCell align="right">{row.unit}</TableCell>
                 <TableCell align="right">{ccyFormat(row.price)}</TableCell>
-                <TableCell align="right">{`0%`}</TableCell>
                 <TableCell align="right">
                   <Button size='small' variant='contained' onClick={()=>handledeleteRow(i)}>
                     Delete
@@ -46,12 +44,11 @@ function AddOrderTable({rows,invoiceSubtotal,invoiceDiscount,invoiceTotal,handle
             ))}
 
             <TableRow>
-              <TableCell rowSpan={3} colSpan={3}/>
+              <TableCell rowSpan={3} />
               <TableCell colSpan={2}>Subtotal</TableCell>
               <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
             </TableRow>
             <TableRow>
-              
               <TableCell colSpan={2}>Discount</TableCell>
               
               <TableCell align="right">{`${invoiceDiscount}%`}</TableCell>
