@@ -14,6 +14,8 @@ import MuiAlert from "@mui/material/Alert";
 import Backdroploading from "../../components/backdrop";
 import axios from "axios";
 import moment from "moment/moment";
+import { useReactToPrint } from "react-to-print";
+import AddOrderTable from "../../components/Table/AddOrderTable";
 const TAX_RATE = 0;
 
 function priceRow(qty, unit) {
@@ -63,7 +65,7 @@ function AddOrder() {
     });
   }, [rows]);
 
-  const componentRef = useRef();
+  const componentRef = React.useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
