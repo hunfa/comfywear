@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../components/Table/MaterialTable";
 import axios from "axios";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography, Button } from "@mui/material";
 import { useRouter } from "next/router";
+import { useSelector, useDispatch } from "react-redux";
+import { setProduct } from "../../store/productSlice";
 
 export default function Allproduct() {
+  const products = useSelector((state) => state.product.products);
+  // console.log(products);
+  const dispatch = useDispatch();
   const [data, setdata] = useState([]);
   const router = useRouter();
   const [loading, setloading] = useState(false);
   useEffect(() => {
-    const fetchdata = async () => {
-      const responce = await axios.get("/api/getProducts");
-      console.log(responce.data.payload);
-      setdata(responce.data.payload);
-    };
-
-    fetchdata();
+    if (products.length) {
+      setdata(products);
+    } else {
+      const fetchdata = async () => {
+        const responce = await axios.get("/api/getProducts");
+        console.log(responce.data.payload);
+        setdata(responce.data.payload);
+        dispatch(setProduct(responce.data.payload));
+      };
+      fetchdata();
+    }
   }, []);
 
   useEffect(() => {
@@ -57,7 +66,21 @@ export default function Allproduct() {
       header: "Sale Price",
       size: 220,
     },
+    {
+      accessorKey: "show",
+      header: "action",
+      Cell: ({ row }) => (
+        <Button variant="contained" onClick={() => handleAction(row.original)}>
+          Edit
+        </Button>
+      ),
+    },
   ];
+
+  const handleAction = (id) => {
+    dispatch(setProduct(id));
+    router.push("/dashboard/editProduct");
+  };
 
   return (
     <>

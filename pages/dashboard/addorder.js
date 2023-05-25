@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRef } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -14,6 +15,7 @@ import MuiAlert from "@mui/material/Alert";
 import Backdroploading from "../../components/backdrop";
 import axios from "axios";
 import moment from "moment/moment";
+import { useReactToPrint } from "react-to-print";
 const TAX_RATE = 0;
 
 function ccyFormat(num) {
@@ -49,6 +51,11 @@ function AddOrder() {
   const invoiceSubtotal = subtotal(rows);
   const invoiceTaxes = TAX_RATE * invoiceSubtotal;
   const invoiceTotal = invoiceTaxes + invoiceSubtotal;
+
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   React.useEffect(() => {
     if (snackbar.msg) openSnackBar();
@@ -90,26 +97,28 @@ function AddOrder() {
     return null;
   };
 
-  useScanDetection({
-    onComplete: (barcode) => {
-      const product = getProduct(barcode);
-      if (!product) return;
+  if (typeof document !== "undefined") {
+    useScanDetection({
+      onComplete: (barcode) => {
+        const product = getProduct(barcode);
+        if (!product) return;
 
-      if (alreadyExistsInRow(product.productCode)) updateCurrentRow(product);
-      else
-        setrows([
-          ...rows,
-          createRow(
-            product.productTitle,
-            1,
-            product.salePrice,
-            product.productCode,
-            product
-          ),
-        ]);
-    },
-    minLength: 2,
-  });
+        if (alreadyExistsInRow(product.productCode)) updateCurrentRow(product);
+        else
+          setrows([
+            ...rows,
+            createRow(
+              product.productTitle,
+              1,
+              product.salePrice,
+              product.productCode,
+              product
+            ),
+          ]);
+      },
+      minLength: 2,
+    });
+  }
 
   const handlePaidAmount = (e) => {
     if (!e.target.value) {
@@ -159,9 +168,10 @@ function AddOrder() {
       const res = await axios.post(`/api/addorder`, {
         newObj,
       });
-      console.log(res);
+
       if (res.data.success) {
         setsnackbar({ msg: "Order Placed Successfully", status: "success" });
+        handlePrint();
       }
     } catch (error) {
       console.log(error);
@@ -184,6 +194,7 @@ function AddOrder() {
         </Alert>
       </Snackbar>
       <TableContainer
+        ref={componentRef}
         component={Paper}
         sx={{ width: "97%", mx: "auto", marginTop: "20px" }}
       >

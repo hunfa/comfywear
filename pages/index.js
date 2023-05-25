@@ -20,10 +20,7 @@ export default function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      username: data.get("username"),
-      password: data.get("password"),
-    });
+
     setIsLoading(true);
 
     try {
@@ -31,7 +28,7 @@ export default function SignIn() {
         username: data.get("username"),
         password: data.get("password"),
       });
-      console.log(res);
+
       if (res.data.success) {
         dispatch(setProduct(res.data.payload.products));
         localStorage.setItem("token", res.data.payload.token);

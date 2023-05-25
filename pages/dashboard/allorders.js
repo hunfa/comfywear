@@ -13,7 +13,7 @@ const Allorders = () => {
   useEffect(() => {
     const fetchdata = async () => {
       const responce = await axios.get("/api/getOrders");
-      console.log(responce.data.payload);
+
       setdata(responce.data.payload);
     };
 
@@ -54,7 +54,6 @@ const Allorders = () => {
   ];
 
   const handleAction = (id) => {
-    console.log(id);
     dispatch(setOrder(id));
     router.push("/dashboard/orderdetail");
   };

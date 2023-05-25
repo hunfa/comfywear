@@ -15,7 +15,7 @@ import Paper from "@mui/material/Paper";
 function Orderdetail() {
   const order = useSelector((state) => state.order);
   const [orderProducts, setorderProducts] = useState([]);
-  console.log("order", order.orders.orders.products);
+
   const [loading, setloading] = useState(false);
   const router = useRouter();
 
@@ -35,7 +35,6 @@ function Orderdetail() {
   }
 
   function subtotal(items) {
-    console.log("items", items);
     let sum = 0;
     items.map((items) => {
       sum += items.rate * items.qty;
@@ -118,7 +117,6 @@ function Orderdetail() {
   ];
 
   const handleAction = (id) => {
-    // console.log("orderProducts", orderProducts);
     setorderProducts(id.products);
     handleOpen();
   };

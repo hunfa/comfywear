@@ -21,8 +21,11 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
 const Index = () => {
+  const products = useSelector((state) => state.product.products);
+
   const [isLoading, setisLoading] = useState(false);
   const router = useRouter();
   const [isvariant, setisvariant] = useState("no");
@@ -31,12 +34,9 @@ const Index = () => {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      variant: [{ size: "", quantity: 0, price: 0 }],
-    },
-  });
+  } = useForm();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "variant",
@@ -48,20 +48,35 @@ const Index = () => {
     }
   }, [router.pathname]);
 
+  useEffect(() => {
+    setValue("productcode", products.productCode);
+    setValue("title", products.productTitle);
+    setValue("quantity", products.quantity);
+    setValue("Price", products.productCode);
+    setValue("salePrice", products.salePrice);
+    setValue("brand", products.brand);
+    setValue("stuff", products.stuff);
+    setValue("category", products.category);
+    setValue("status", products.status);
+  }, [setValue, products]);
+
   const onSubmit = async (data) => {
     setisLoading(true);
     try {
-      const responce = await axios.post("/api/addproduct", {
+      const responce = await axios.post("/api/editproduct", {
         data,
+        id: products._id,
         // isvariant,
       });
 
       if (responce.data.success) {
         setisLoading(false);
+        router.push("/dashboard/allproduct");
         reset();
       }
     } catch (error) {
       setisLoading(false);
+      console.log("error while uploading product");
     }
   };
 
@@ -135,6 +150,7 @@ const Index = () => {
                   style={{ width: "70%" }}
                   label="Select-option"
                   placeholder="Select-option"
+                  defaultValue={products.brand}
                   {...register("brand", { required: true })}
                 >
                   <MenuItem value="Select-option">Select-option</MenuItem>
@@ -150,6 +166,7 @@ const Index = () => {
                   id={"stuf"}
                   style={{ width: "70%" }}
                   label="Select-Stuff"
+                  defaultValue={products.stuff}
                   placeholder="Select-option"
                   {...register("stuff", { required: true })}
                 >
@@ -173,6 +190,7 @@ const Index = () => {
                   style={{ width: "70%" }}
                   label="Select-Category"
                   placeholder="Select-option"
+                  defaultValue={products.category}
                   {...register("category", { required: true })}
                 >
                   <MenuItem value="none">Select-option</MenuItem>
@@ -191,6 +209,7 @@ const Index = () => {
                   id="status"
                   style={{ width: "70%" }}
                   label="Select-Status"
+                  defaultValue={products.status}
                   placeholder="Select-option"
                   {...register("status", { required: true })}
                 >
