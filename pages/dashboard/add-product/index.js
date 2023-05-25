@@ -114,8 +114,8 @@ const Index = () => {
             />
             <TextField
               type="number"
-              placeholder="Sale Price"
-              {...register("salePrice", {
+              placeholder="Discount in %"
+              {...register("discount", {
                 required: true,
               })}
             />

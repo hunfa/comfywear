@@ -13,19 +13,6 @@ export default function Allproduct() {
   const [data, setdata] = useState([]);
   const router = useRouter();
   const [loading, setloading] = useState(false);
-  useEffect(() => {
-    if (products.length) {
-      setdata(products);
-    } else {
-      const fetchdata = async () => {
-        const responce = await axios.get("/api/getProducts");
-        console.log(responce.data.payload);
-        setdata(responce.data.payload);
-        dispatch(setProduct(responce.data.payload));
-      };
-      fetchdata();
-    }
-  }, []);
 
   useEffect(() => {
     setloading(true);
@@ -93,7 +80,7 @@ export default function Allproduct() {
               List of all Products
             </Typography>
 
-            <Table data={data} columns={columns} />
+            <Table data={products} columns={columns} />
           </Box>
         </>
       )}

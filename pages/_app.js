@@ -9,12 +9,28 @@ import { store } from "../store/index";
 import { Provider } from "react-redux";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { setProduct } from "../store/productSlice";
+import axios from "axios";
 
 function MyApp({ Component, pageProps }) {
+  // const dispatch = useDispatch();
+  // const products = useSelector((state) => state.product.products);
+
   const router = useRouter();
   const [loading, setloading] = useState(false);
   console.log(router.pathname.startsWith("/dashboard"));
   const showNavbar = router.pathname.startsWith("/dashboard");
+
+  useEffect(() => {
+    const fetchdata = async () => {
+      const responce = await axios.get("/api/getProducts");
+      console.log(responce.data.payload);
+      // setdata(responce.data.payload);
+      store.dispatch(setProduct(responce.data.payload));
+    };
+    fetchdata();
+  }, []);
 
   useEffect(() => {
     if (!localStorage.getItem("user") || !localStorage.getItem("token")) {
