@@ -17,24 +17,22 @@ import {
   Typography,
   Paper,
   CircularProgress,
-
   Avatar,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Index = () => {
   const [isLoading, setisLoading] = useState(false);
-  const [uploading, setuploading] = useState(false)
-  const [location, setlocation] = useState()
+  const [uploading, setuploading] = useState(false);
+  const [location, setlocation] = useState();
   const [progress, setprogress] = useState(0);
-  const [pic, setpic] = useState()
+  const [pic, setpic] = useState();
   const router = useRouter();
-  const [isvariant, setisvariant] = useState("no");
+
   const {
     register,
     handleSubmit,
@@ -58,91 +56,93 @@ const Index = () => {
   }, [router.pathname]);
 
   const onSubmit = async (data) => {
+    if (!pic.url) {
+      return;
+    }
+    setuploading(true);
     setisLoading(true);
     try {
       const responce = await axios.post("/api/addproduct", {
         data,
         // isvariant,
+        picUrl: pic.url,
       });
 
       if (responce.data.success) {
         setisLoading(false);
         reset();
-        setlocation('')
-
+        setlocation("");
+        setuploading(false);
       }
     } catch (error) {
       setisLoading(false);
+      setuploading(false);
     }
   };
 
-  const apiKey="123328373753255";
-  const cloudName="da7eumrs4";
-  const filesubmit=async()=>{
+  const apiKey = "123328373753255";
+  const cloudName = "da7eumrs4";
+  const filesubmit = async () => {
     // toast("Wow so easy!")
-    const file= document.getElementById("img").files[0]
-    if(file.size>1000000)
-    {
+    const file = document.getElementById("img").files[0];
+    if (file.size > 1000000) {
       // size is greater than 1mb error
-     
-      toast.error("image size cannot be greater than 1mb")
-      return
+
+      toast.error("image size cannot be greater than 1mb");
+      return;
     }
-    if(file.type!=="image/jpeg" && file.type!=="image/png" )
-    {
+    if (file.type !== "image/jpeg" && file.type !== "image/png") {
       // format error
-    
-      toast("only JPEG and PNG are allowed")
 
-      return 
+      toast("only JPEG and PNG are allowed");
+
+      return;
     }
-  //   console.log(file);
-  //   console.log(URL.createObjectURL(file))
-    setlocation(URL.createObjectURL(file))
+    //   console.log(file);
+    //   console.log(URL.createObjectURL(file))
+    setlocation(URL.createObjectURL(file));
     setuploading(true);
-      const data=new FormData();
-      data.append("file",document.getElementById("img").files[0]);
-      data.append("api_key",apiKey);
-      data.append("upload_preset","comfywear")
-  
-  try {
-    
-  
-      const cloudinaryResponse = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, data, {
-      headers: { "Content-Type": "multipart/form-data" },
-      onUploadProgress: function (e) {
-        
-          setprogress(Math.trunc((e.loaded / e.total)*100))
-      }
-    })
-    if(cloudinaryResponse.status==200){
-        
-        setpic({publicKey:cloudinaryResponse.data.public_id,
-          url:cloudinaryResponse.data.url,
-        })
-        setuploading(false)
-        setprogress(0);
-    }
-    else{
-      setuploading(false)
-      setlocation('')
-      toast.error("Error while uploading image")
-    }
-  } catch (error) {
-    console.log(error)
-    toast.error("Error while uploading image")
-    setlocation('')
-  }
-  
-  }
-  const clickfileinput=()=>{
-    document.getElementById("img").click();
-}
+    const data = new FormData();
+    data.append("file", document.getElementById("img").files[0]);
+    data.append("api_key", apiKey);
+    data.append("upload_preset", "comfywear");
 
+    try {
+      const cloudinaryResponse = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: function (e) {
+            setprogress(Math.trunc((e.loaded / e.total) * 100));
+          },
+        }
+      );
+      if (cloudinaryResponse.status == 200) {
+        setpic({
+          publicKey: cloudinaryResponse.data.public_id,
+          url: cloudinaryResponse.data.url,
+        });
+        setuploading(false);
+        setprogress(0);
+      } else {
+        setuploading(false);
+        setlocation("");
+        toast.error("Error while uploading image");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error while uploading image");
+      setlocation("");
+    }
+  };
+  const clickfileinput = () => {
+    document.getElementById("img").click();
+  };
 
   return (
     <>
-    <ToastContainer />
+      <ToastContainer />
       <Paper
         elevation={3}
         style={{
@@ -158,65 +158,42 @@ const Index = () => {
           </Typography>
         </Box>
 
-
-
-
-
         <Box textAlign="center" marginBottom="20px">
-            <Button
-              component="label"
+          <Button
+            component="label"
+            style={{
+              top: "116px",
+              borderRadius: "100%",
+              zIndex: "999",
+              backgroundColor: "whitesmoke",
+              height: "30px",
+              width: "30px",
+              minWidth: "30px",
+              marginLeft: "84px",
+            }}
+            onClick={clickfileinput}
+          >
+            <img
+              src="/camera.svg"
+              alt="Edit "
               style={{
-                top: '116px',
-                borderRadius: '100%',
-                zIndex: '999',
-                backgroundColor: 'whitesmoke',
-                height: '30px',
-                width: '30px',
-                minWidth: '30px',
-                marginLeft: '84px',
-              }}
-              onClick={clickfileinput}
-            >
-              <img
-                src='/camera.svg'
-                alt="Edit "
-                style={{
-                  color: 'darkslategray',
-                  height: '1em',
-                  width: '1em',
-                }}
-                
-              />
-
-              
-            </Button>
-            <Avatar
-              src={location}
-              style={{
-                height: '120px',
-                width: '120px',
-                margin: 'auto',
+                color: "darkslategray",
+                height: "1em",
+                width: "1em",
               }}
             />
-            <input
-              id="img"
-                hidden
-                type="file"
-                onInput={filesubmit}
-              />
-              <CircularProgress variant="determinate" value={progress} />
-          </Box>
-
-
-
-
-
-
-
-
-
-
-
+          </Button>
+          <Avatar
+            src={location}
+            style={{
+              height: "120px",
+              width: "120px",
+              margin: "auto",
+            }}
+          />
+          <input id="img" hidden type="file" onInput={filesubmit} />
+          <CircularProgress variant="determinate" value={progress} />
+        </Box>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box
@@ -437,6 +414,7 @@ const Index = () => {
               fullWidth
               variant="contained"
               type="submit"
+              disabled={uploading}
             >
               Submit
             </Button>

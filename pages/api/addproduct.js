@@ -18,7 +18,7 @@ const handler = async (req, res) => {
       status,
       // variant,
     } = req.body.data;
-    // const variantStatus = req.body.isvariant;
+    const picture = req.body.picUrl;
 
     let product;
     try {
@@ -26,6 +26,7 @@ const handler = async (req, res) => {
       product = new Product({
         productCode: productcode,
         productTitle: title,
+        productImage: picture,
         quantity: quantity,
         rate: Price,
         discount: discount,

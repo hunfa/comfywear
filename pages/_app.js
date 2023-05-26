@@ -36,7 +36,7 @@ function MyApp({ Component, pageProps }) {
     if (!localStorage.getItem("user") || !localStorage.getItem("token")) {
       router.push("/");
     }
-  }, [router.pathname]);
+  }, []);
   return (
     <>
       {loading ? (

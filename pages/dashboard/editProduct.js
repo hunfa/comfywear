@@ -53,7 +53,7 @@ const Index = () => {
     setValue("title", products.productTitle);
     setValue("quantity", products.quantity);
     setValue("Price", products.productCode);
-    setValue("salePrice", products.salePrice);
+    setValue("discount", products.discount);
     setValue("brand", products.brand);
     setValue("stuff", products.stuff);
     setValue("category", products.category);
@@ -93,7 +93,7 @@ const Index = () => {
       >
         <Box mt={"2rem"} ml="2rem">
           <Typography fontWeight={"bold"} fontSize={"2rem"}>
-            Add Product
+            Edit Product
           </Typography>
         </Box>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -129,8 +129,8 @@ const Index = () => {
             />
             <TextField
               type="number"
-              placeholder="Sale Price"
-              {...register("salePrice", {
+              placeholder="Discount in %"
+              {...register("discount", {
                 required: true,
               })}
             />

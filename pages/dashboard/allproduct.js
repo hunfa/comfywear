@@ -21,7 +21,7 @@ export default function Allproduct() {
     } else {
       setloading(false);
     }
-  }, [router.pathname]);
+  }, []);
 
   const columns = [
     {
@@ -31,8 +31,23 @@ export default function Allproduct() {
     },
     {
       accessorKey: "productTitle",
-      header: "Product Name",
+      header: "Title",
       size: 120,
+    },
+    {
+      accessorKey: "productImage",
+      header: "Image",
+      size: 120,
+      Cell: (value) => {
+        // console.log("cell", value.row.original.productImage);
+        return (
+          <img
+            src={value.row.original.productImage}
+            alt="image"
+            style={{ width: "100%", height: "auto" }}
+          />
+        );
+      },
     },
     {
       accessorKey: "quantity",
@@ -49,8 +64,8 @@ export default function Allproduct() {
       header: "status",
     },
     {
-      accessorKey: "salePrice",
-      header: "Sale Price",
+      accessorKey: "discount",
+      header: "Discount",
       size: 220,
     },
     {
