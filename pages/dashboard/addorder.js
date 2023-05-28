@@ -206,9 +206,9 @@ function AddOrder() {
       const res = await axios.post(`/api/addorder`, {
         newObj,
       });
-      console.log(res);
       if (res.data.success) {
         setsnackbar({ msg: "Order Placed Successfully", status: "success" });
+        handleReset()
       }
     } catch (error) {
       console.log(error);
