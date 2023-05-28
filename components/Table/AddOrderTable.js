@@ -20,9 +20,11 @@ function AddOrderTable({rows,invoiceSubtotal,invoiceDiscount,invoiceTotal,handle
           <TableHead>
            
             <TableRow>
-              <TableCell>Desc</TableCell>
+            <TableCell>Code</TableCell>
+              <TableCell >Desc</TableCell>
               <TableCell align="right">Qty.</TableCell>
               <TableCell align="right">Unit</TableCell>
+              <TableCell align="right">discount</TableCell>
               <TableCell align="right">Sum</TableCell>
               <TableCell align="right">Action</TableCell>
             </TableRow>
@@ -30,10 +32,13 @@ function AddOrderTable({rows,invoiceSubtotal,invoiceDiscount,invoiceTotal,handle
           <TableBody>
             {rows.map((row,i) => (
               <TableRow key={row.code}>
+                <TableCell>{row.code}</TableCell>
                 <TableCell>{row.desc}</TableCell>
                 <TableCell align="right">{row.qty}</TableCell>
                 <TableCell align="right">{row.unit}</TableCell>
+                <TableCell align="right">{`${row.discount}%`}</TableCell>
                 <TableCell align="right">{ccyFormat(row.price)}</TableCell>
+
                 <TableCell align="right">
                   <Button size='small' variant='contained' onClick={()=>handledeleteRow(i)}>
                     Delete
@@ -44,16 +49,17 @@ function AddOrderTable({rows,invoiceSubtotal,invoiceDiscount,invoiceTotal,handle
             ))}
 
             <TableRow>
-              <TableCell rowSpan={3} />
               <TableCell colSpan={2}>Subtotal</TableCell>
               <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
             </TableRow>
             <TableRow>
+
               <TableCell colSpan={2}>Discount</TableCell>
               
               <TableCell align="right">{`${invoiceDiscount}%`}</TableCell>
             </TableRow>
             <TableRow>
+
               <TableCell colSpan={2}>Total</TableCell>
               <TableCell align="right">{ccyFormat(invoiceTotal)}</TableCell>
             </TableRow>

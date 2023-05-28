@@ -19,14 +19,13 @@ function MyApp({ Component, pageProps }) {
 
   const router = useRouter();
   const [loading, setloading] = useState(false);
-  console.log(router.pathname.startsWith("/dashboard"));
+  
   const showNavbar = router.pathname.startsWith("/dashboard");
 
   useEffect(() => {
     const fetchdata = async () => {
       const responce = await axios.get("/api/getProducts");
-      console.log(responce.data.payload);
-      // setdata(responce.data.payload);
+     
       store.dispatch(setProduct(responce.data.payload));
     };
     fetchdata();

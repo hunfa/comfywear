@@ -41,6 +41,7 @@ module.exports = mongoose.model("order", OrderSchema);
 //         rate:Number,
 //         salePrice:Number,
 //         qty:Number,
+//         discount:Number
 //         _id:String
 //     }]
 
